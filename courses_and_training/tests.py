@@ -7,23 +7,15 @@ class CourseTestCase(APITestCase):
 
     def setUp(self):
 
-        self.user = User.objects.create(
-            username="test_user"
-        )
+        self.user = User.objects.create(username="test_user")
 
         self.client.force_authenticate(user=self.user)
 
-        self.course = Course.objects.create(
-            title="Test Course",
-            owner=self.user
-        )
+        self.course = Course.objects.create(title="Test Course", owner=self.user)
 
     def test_create_course(self):
 
-        data = {
-            "title": "New Course",
-            "description": "Test"
-        }
+        data = {"title": "New Course", "description": "Test"}
 
         response = self.client.post("/courses/", data)
 

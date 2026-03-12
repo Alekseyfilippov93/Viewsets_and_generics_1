@@ -32,12 +32,23 @@ class CourseViewSet(viewsets.ModelViewSet):
 
         return [permission() for permission in permission_classes]
 
+
 # CRUD для уроков через Generic-классы
 class LessonListCreateAPIView(generics.ListCreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, ~IsModerator]
     pagination_class = CoursePagination
+
+    def get_permissions(self):
+
+        if self.request.method == "POST":
+            permission_classes = [IsAuthenticated]
+
+        else:
+            permission_classes = [IsAuthenticated | IsModerator]
+
+        return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -49,6 +60,19 @@ class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsModerator | IsOwner]
     pagination_class = CoursePagination
 
+    def get_permissions(self):
+
+        if self.request.method in ["PUT", "PATCH"]:
+            permission_classes = [IsAuthenticated | IsModerator]
+
+        elif self.request.method == "DELETE":
+            permission_classes = [IsOwner]
+
+        else:
+            permission_classes = [IsAuthenticated | IsModerator]
+
+        return [permission() for permission in permission_classes]
+
 
 class SubscriptionAPIView(APIView):
 
@@ -59,19 +83,13 @@ class SubscriptionAPIView(APIView):
 
         course_item = get_object_or_404(Course, id=course_id)
 
-        subs_item = Subscription.objects.filter(
-            user=user,
-            course=course_item
-        )
+        subs_item = Subscription.objects.filter(user=user, course=course_item)
 
         if subs_item.exists():
             subs_item.delete()
             message = "подписка удалена"
         else:
-            Subscription.objects.create(
-                user=user,
-                course=course_item
-            )
+            Subscription.objects.create(user=user, course=course_item)
             message = "подписка добавлена"
 
         return Response({"message": message})

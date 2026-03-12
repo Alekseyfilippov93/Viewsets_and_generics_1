@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "courses_and_training",
     "rest_framework",
     "django_filters",
+    "rest_framework_simplejwt",
 ]
 
 MIDDLEWARE = [
