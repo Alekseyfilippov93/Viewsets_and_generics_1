@@ -35,17 +35,38 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 # CRUD для уроков через Generic-классы
 class LessonListCreateAPIView(generics.ListCreateAPIView):
-
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, ~IsModerator]
+
+    def get_permissions(self):
+
+        if self.request.method == "POST":
+            permission_classes = [IsAuthenticated]
+
+        else:
+            permission_classes = [IsAuthenticated | IsModerator]
+
+        return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
 
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
-
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = [IsAuthenticated, IsModerator | IsOwner]
+
+    def get_permissions(self):
+
+        if self.request.method in ["PUT", "PATCH"]:
+            permission_classes = [IsAuthenticated | IsModerator]
+
+        elif self.request.method == "DELETE":
+            permission_classes = [IsOwner]
+
+        else:
+            permission_classes = [IsAuthenticated | IsModerator]
+
+        return [permission() for permission in permission_classes]
