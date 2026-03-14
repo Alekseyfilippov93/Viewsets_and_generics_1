@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Course(models.Model):
@@ -7,6 +8,10 @@ class Course(models.Model):
         upload_to="courses/previews/", blank=True, null=True, verbose_name="Превью"
     )
     description = models.TextField(verbose_name="Описание")
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
+    )
 
     def __str__(self):
         return self.title
@@ -26,6 +31,10 @@ class Lesson(models.Model):
 
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="lessons", verbose_name="Курс"
+    )
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True
     )
 
     def __str__(self):
