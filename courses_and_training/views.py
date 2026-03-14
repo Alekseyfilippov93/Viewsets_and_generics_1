@@ -42,10 +42,9 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
     def get_permissions(self):
 
         if self.request.method == "POST":
-            permission_classes = [IsAuthenticated]
-
+            permission_classes = [IsAuthenticated, ~IsModerator]
         else:
-            permission_classes = [IsAuthenticated | IsModerator]
+            permission_classes = [IsAuthenticated]
 
         return [permission() for permission in permission_classes]
 
@@ -61,12 +60,10 @@ class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_permissions(self):
 
         if self.request.method in ["PUT", "PATCH"]:
-            permission_classes = [IsAuthenticated | IsModerator]
-
+            permission_classes = [IsAuthenticated, IsModerator | IsOwner]
         elif self.request.method == "DELETE":
-            permission_classes = [IsOwner]
-
+            permission_classes = [IsAuthenticated, IsOwner]
         else:
-            permission_classes = [IsAuthenticated | IsModerator]
+            permission_classes = [IsAuthenticated]
 
         return [permission() for permission in permission_classes]
