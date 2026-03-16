@@ -84,5 +84,9 @@ class Payment(models.Model):
         max_length=20, choices=PAYMENT_METHODS, verbose_name="Способ оплаты"
     )
 
+    payment_url = models.URLField(
+        blank=True, null=True, verbose_name="Ссылка на оплату"
+    )
+
     def __str__(self):
         return f"{self.user} - {self.amount}"
