@@ -9,6 +9,10 @@ from .serializers import CourseSerializer, LessonSerializer
 from .permissions import IsModerator, IsOwner
 from .paginators import CoursePagination
 
+from .tasks import send_course_update_email
+from django.utils import timezone
+from datetime import timedelta
+
 
 # CRUD для курса через ViewSet
 class CourseViewSet(viewsets.ModelViewSet):
@@ -31,6 +35,20 @@ class CourseViewSet(viewsets.ModelViewSet):
             permission_classes = [IsAuthenticated]
 
         return [permission() for permission in permission_classes]
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+
+        if course.updated_at and timezone.now() - course.updated_at < timedelta(
+            hours=4
+        ):
+            return
+
+        subscriptions = Subscription.objects.filter(course=course)
+        emails = [sub.user.email for sub in subscriptions]
+
+        if emails:
+            send_course_update_email.delay(emails, course.title)
 
 
 # CRUD для уроков через Generic-классы
