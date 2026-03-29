@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(unique=True)
+    telegram_chat_id = models.CharField(max_length=50, blank=True, null=True)
 
     phone = models.CharField(max_length=20, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
@@ -90,3 +91,6 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.amount}"
+
+
+telegram_chat_id = models.CharField(max_length=50, blank=True, null=True)
