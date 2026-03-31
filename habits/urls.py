@@ -7,5 +7,5 @@ router.register(r"habits", HabitViewSet, basename="habit")
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("habits/public/", PublicHabitListAPIView.as_view(), name="public-habits"),
+    path("habits/public/", PublicHabitListAPIView.as_view(), name="public-habit-list"),
 ]
