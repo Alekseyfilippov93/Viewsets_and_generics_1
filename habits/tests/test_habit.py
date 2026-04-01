@@ -11,11 +11,11 @@ User = get_user_model()
 
 # ТЕСТЫ МОДЕЛИ
 
+
 class HabitModelTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            email="test@example.com",
-            password="password123"
+            email="test@example.com", password="password123"
         )
 
     def test_create_habit(self):
@@ -24,7 +24,7 @@ class HabitModelTest(TestCase):
             action="Пить воду",
             place="Кухня",
             time=timezone.localtime().time(),
-            duration_seconds=60
+            duration_seconds=60,
         )
 
         self.assertEqual(habit.user.email, "test@example.com")
@@ -37,7 +37,7 @@ class HabitModelTest(TestCase):
             action="Чтение книги",
             place="Комната",
             time=timezone.localtime().time(),
-            is_reward_habit=True
+            is_reward_habit=True,
         )
 
         with self.assertRaises(Exception):
@@ -47,7 +47,7 @@ class HabitModelTest(TestCase):
                 place="Зал",
                 time=timezone.localtime().time(),
                 reward="Сладость",
-                related_habit=reward_habit
+                related_habit=reward_habit,
             )
 
     def test_duration_seconds_validation(self):
@@ -57,17 +57,17 @@ class HabitModelTest(TestCase):
                 action="Долгая медитация",
                 place="Комната",
                 time=timezone.localtime().time(),
-                duration_seconds=200
+                duration_seconds=200,
             )
 
 
 # ТЕСТЫ API
 
+
 class HabitAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            email="test@example.com",
-            password="password123"
+            email="test@example.com", password="password123"
         )
 
         # ВАЖНО: авторизация
@@ -78,7 +78,7 @@ class HabitAPITest(APITestCase):
             action="Прогулка",
             place="Парк",
             time=timezone.localtime().time(),
-            duration_seconds=60
+            duration_seconds=60,
         )
 
     def test_create_habit(self):
@@ -88,7 +88,7 @@ class HabitAPITest(APITestCase):
             "action": "Йога",
             "place": "Зал",
             "time": str(timezone.localtime().time()),
-            "duration_seconds": 60
+            "duration_seconds": 60,
         }
 
         response = self.client.post(url, data, format="json")
@@ -120,11 +120,11 @@ class HabitAPITest(APITestCase):
 
 # ПУБЛИЧНЫЕ ПРИВЫЧКИ
 
+
 class PublicHabitAPITest(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
-            email="test@example.com",
-            password="password123"
+            email="test@example.com", password="password123"
         )
 
         Habit.objects.create(
@@ -133,7 +133,7 @@ class PublicHabitAPITest(APITestCase):
             place="Комната",
             time=timezone.localtime().time(),
             duration_seconds=60,
-            is_public=True
+            is_public=True,
         )
 
         Habit.objects.create(
@@ -142,5 +142,5 @@ class PublicHabitAPITest(APITestCase):
             place="Парк",
             time=timezone.localtime().time(),
             duration_seconds=60,
-            is_public=False
+            is_public=False,
         )
