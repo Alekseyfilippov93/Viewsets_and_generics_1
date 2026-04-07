@@ -10,6 +10,10 @@ Backend-приложение для управления курсами и ур�
 - Django
 - Django REST Framework
 - Poetry
+- Docker / Docker Compose
+- PostgreSQL
+- Redis
+- Celery
 
 ## Установка
 
@@ -115,5 +119,46 @@ courses/validators.py и подключён в сериализаторе уро
   - деактивация пользователей, которые не заходили более месяца (is_active=False)
 - Временные зоны Django и Celery синхронизированы для корректного запуска задач.
 
-##
+---
 
+## Docker и запуск проекта
+
+---
+
+### Проект полностью контейнеризован. Все сервисы запускаются одной командой.
+
+- Создать файл .env (cp .env.example .env)
+- Запустить проект (docker-compose up --build)
+
+### Сервисы, которые поднимаются:
+
+backend — Django приложение
+db — PostgreSQL
+redis — Redis для Celery
+celery — обработчик фоновых задач
+celery-beat — планировщик периодических задач
+3. Доступ к сервисам
+Backend: http://localhost:8000
+PostgreSQL: localhost:5432
+Redis: localhost:6379
+Проверка работы сервисов
+Django
+docker exec -it django_app python manage.py check
+PostgreSQL
+docker exec -it postgres_db psql -U postgres
+Redis
+docker exec -it redis redis-cli ping
+
+Ожидаемый ответ:
+
+PONG
+Celery Worker
+docker logs celery_worker
+Celery Beat
+docker logs celery_beat
+Остановка проекта
+docker-compose down
+Переменные окружения
+
+Все чувствительные данные вынесены в файл .env.
+Пример файла находится в .env.example.
