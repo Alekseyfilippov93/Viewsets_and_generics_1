@@ -101,6 +101,7 @@ IsModerator | IsOwner
 Создана фикстура для групп пользователей:
 
 ---
+
 ### Валидация ссылок
 
 Добавлен кастомный валидатор, который запрещает добавление ссылок на сторонние ресурсы.  
@@ -113,10 +114,11 @@ courses/validators.py и подключён в сериализаторе уро
 ---
 
 ## Celery и фоновые задачи
+
 - Настроен Celery с Redis для асинхронного выполнения задач;
 - Добавлена асинхронная рассылка уведомлений пользователям при обновлении курса (не чаще чем раз в 4 часа)
 - Настроен Celery Beat для периодических задач:
-  - деактивация пользователей, которые не заходили более месяца (is_active=False)
+    - деактивация пользователей, которые не заходили более месяца (is_active=False)
 - Временные зоны Django и Celery синхронизированы для корректного запуска задач.
 
 ---
@@ -132,33 +134,80 @@ courses/validators.py и подключён в сериализаторе уро
 
 ### Сервисы, которые поднимаются:
 
-backend — Django приложение
-db — PostgreSQL
-redis — Redis для Celery
-celery — обработчик фоновых задач
-celery-beat — планировщик периодических задач
-3. Доступ к сервисам
-Backend: http://localhost:8000
-PostgreSQL: localhost:5432
-Redis: localhost:6379
-Проверка работы сервисов
-Django
+- backend — Django приложение
+- db — PostgreSQL
+- redis — Redis для Celery
+- celery — обработчик фоновых задач
+- celery-beat — планировщик периодических задач
+
+### Доступ к сервисам
+
+- Backend: http://localhost:8000
+- PostgreSQL: localhost:5432
+- Redis: localhost:6379
+
+#### Проверка работы сервисов
+
+- Django
+
+```
 docker exec -it django_app python manage.py check
-PostgreSQL
+```
+
+- PostgreSQL
+
+```
 docker exec -it postgres_db psql -U postgres
-Redis
-docker exec -it redis redis-cli ping
+```
 
-Ожидаемый ответ:
+- Redis
 
-PONG
-Celery Worker
-docker logs celery_worker
-Celery Beat
+```
+- docker exec -it redis redis-cli ping
+```
+
+- Ожидаемый ответ:
+  ```PONG```
+- Celery Worker
+
+```
+-docker logs celery_worker
+```
+
+- Celery Beat
+
+```
 docker logs celery_beat
-Остановка проекта
-docker-compose down
-Переменные окружения
+```
 
-Все чувствительные данные вынесены в файл .env.
-Пример файла находится в .env.example.
+- Остановка проекта
+
+```
+docker-compose down
+```
+
+#### Переменные окружения
+
+- Все чувствительные данные вынесены в файл .env.
+- Пример файла находится в .env.example.
+
+### Примечание
+
+1. Клонируем репозиторий и переходим в папку проекта
+
+```
+git clone <repo_url>
+cd project
+```
+
+2. Создаём файл .env на основе шаблона
+
+```
+cp .env.example .env
+```
+
+3. Запуск проекта со сборкой контейнеров
+
+```
+docker-compose up --build
+```
