@@ -170,6 +170,7 @@ docker exec -it postgres_db psql -U postgres
   ```PONG```
 - Celery Worker
 
+
 ```
 -docker logs celery_worker
 ```
