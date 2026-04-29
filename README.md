@@ -4,9 +4,22 @@
 
 Backend-приложение для управления курсами и уроками.
 
+## О проекте
+
+Проект реализован на Django REST Framework и включает:
+
+- авторизацию JWT;
+- роли пользователей и права доступа;
+- CRUD для курсов и уроков;
+- оплату;
+- Celery-задачи;
+- Celery Beat для периодических задач;
+- Docker-контейнеризацию;
+- CI/CD с автоматическим деплоем на сервер.
+
 ## Стек
 
-- Python
+- Python 3.13
 - Django
 - Django REST Framework
 - Poetry
@@ -14,13 +27,15 @@ Backend-приложение для управления курсами и ур�
 - PostgreSQL
 - Redis
 - Celery
+- Celery Beat
+- Nginx
+- GitHub Actions
 
 ## Установка
 
 ```bash
 git clone <repo_url>
-cd project
-poetry install
+cd Viewsets_and_generics
 ```
 
 ---
@@ -170,7 +185,6 @@ docker exec -it postgres_db psql -U postgres
   ```PONG```
 - Celery Worker
 
-
 ```
 -docker logs celery_worker
 ```
@@ -198,7 +212,7 @@ docker-compose down
 
 ```
 git clone <repo_url>
-cd project
+cd Viewsets_and_generics
 ```
 
 2. Создаём файл .env на основе шаблона
@@ -212,3 +226,12 @@ cp .env.example .env
 ```
 docker-compose up --build
 ```
+
+### Проект поднимет:
+
+- backend — Django;
+- db — PostgreSQL;
+- redis — Redis;
+- celery — worker;
+- celery-beat — scheduler;
+- nginx — reverse proxy.
