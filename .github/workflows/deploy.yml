@@ -70,7 +70,7 @@ jobs:
           script: |
             cd Viewsets_and_generics_1
 
-            git pull origin feature_9
+            git pull
 
             docker compose down
             docker compose build
