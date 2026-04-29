@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
-from .permissions import IsModerator, IsOwner
+from .permissions import IsModerator, IsOwner, IsOwnerOrModerator
 from .paginators import CoursePagination
 
 from .tasks import send_course_update_email
@@ -40,7 +40,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = serializer.save()
 
         if course.updated_at and timezone.now() - course.updated_at < timedelta(
-            hours=4
+                hours=4
         ):
             return
 
@@ -75,15 +75,7 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-
-    def get_permissions(self):
-        if self.request.method in ["PUT", "PATCH"]:
-            return [IsAuthenticated(), (IsModerator() | IsOwner())]
-
-        elif self.request.method == "DELETE":
-            return [IsAuthenticated(), IsOwner()]
-
-        return [IsAuthenticated(), IsModerator()]
+    permission_classes = [IsAuthenticated, IsOwnerOrModerator]
 
 
 class SubscriptionAPIView(APIView):
