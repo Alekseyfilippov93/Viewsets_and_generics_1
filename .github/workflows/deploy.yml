@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Deploy to server via SSH
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -69,9 +69,11 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd Viewsets_and_generics_1
-            git pull origin feature_8
-            source venv/bin/activate
-            pip install -r requirements.txt
-            python manage.py migrate
-            sudo systemctl restart gunicorn
-            sudo systemctl restart nginx
+
+            git pull origin feature_9
+
+            docker compose down
+            docker compose build
+            docker compose up -d
+
+            docker system prune -af
