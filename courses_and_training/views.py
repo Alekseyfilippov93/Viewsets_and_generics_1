@@ -75,21 +75,15 @@ class LessonListCreateAPIView(generics.ListCreateAPIView):
 class LessonRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = [IsAuthenticated, IsModerator | IsOwner]
-    pagination_class = CoursePagination
 
     def get_permissions(self):
-
         if self.request.method in ["PUT", "PATCH"]:
-            permission_classes = [IsModerator | IsOwner]
+            return [IsAuthenticated(), (IsModerator() | IsOwner())]
 
         elif self.request.method == "DELETE":
-            permission_classes = [IsOwner]
+            return [IsAuthenticated(), IsOwner()]
 
-        else:
-            permission_classes = [IsAuthenticated | IsModerator]
-
-        return [permission() for permission in permission_classes]
+        return [IsAuthenticated(), IsModerator()]
 
 
 class SubscriptionAPIView(APIView):
