@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
-from .permissions import IsModerator, IsOwner, IsOwnerOrModerator
+from .permissions import IsModerator, IsOwnerOrModerator
 from .paginators import CoursePagination
 
 from .tasks import send_course_update_email
@@ -40,7 +40,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = serializer.save()
 
         if course.updated_at and timezone.now() - course.updated_at < timedelta(
-                hours=4
+            hours=4
         ):
             return
 

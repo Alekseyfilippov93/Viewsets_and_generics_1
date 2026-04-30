@@ -4,9 +4,22 @@
 
 Backend-приложение для управления курсами и уроками.
 
+## О проекте
+
+Проект реализован на Django REST Framework и включает:
+
+- авторизацию JWT;
+- роли пользователей и права доступа;
+- CRUD для курсов и уроков;
+- оплату;
+- Celery-задачи;
+- Celery Beat для периодических задач;
+- Docker-контейнеризацию;
+- CI/CD с автоматическим деплоем на сервер.
+
 ## Стек
 
-- Python
+- Python 3.13
 - Django
 - Django REST Framework
 - Poetry
@@ -14,13 +27,16 @@ Backend-приложение для управления курсами и ур�
 - PostgreSQL
 - Redis
 - Celery
+- Celery Beat
+- Nginx
+- GitHub Actions
 
 ## Установка
 
 ```bash
 git clone <repo_url>
-cd project
-poetry install
+cd Viewsets_and_generics
+cp .env.example .env
 ```
 
 ---
@@ -129,8 +145,7 @@ courses/validators.py и подключён в сериализаторе уро
 
 ### Проект полностью контейнеризован. Все сервисы запускаются одной командой.
 
-- Создать файл .env (cp .env.example .env)
-- Запустить проект (docker-compose up --build)
+- Запустить проект (docker compose up --build)
 
 ### Сервисы, которые поднимаются:
 
@@ -139,6 +154,7 @@ courses/validators.py и подключён в сериализаторе уро
 - redis — Redis для Celery
 - celery — обработчик фоновых задач
 - celery-beat — планировщик периодических задач
+- nginx — reverse proxy
 
 ### Доступ к сервисам
 
@@ -151,64 +167,95 @@ courses/validators.py и подключён в сериализаторе уро
 - Django
 
 ```
-docker exec -it django_app python manage.py check
+docker compose exec backend python manage.py check
+```
+
+- Миграции
+
+```
+docker compose exec backend python manage.py migrate
 ```
 
 - PostgreSQL
 
 ```
-docker exec -it postgres_db psql -U postgres
+docker compose exec db psql -U postgres
 ```
 
 - Redis
 
 ```
-- docker exec -it redis redis-cli ping
+docker compose exec redis redis-cli ping
 ```
 
 - Ожидаемый ответ:
   ```PONG```
-- Celery Worker
-
-
-```
--docker logs celery_worker
-```
 
 - Celery Beat
 
 ```
-docker logs celery_beat
+docker compose logs -f celery-beat
 ```
 
 - Остановка проекта
 
 ```
-docker-compose down
+docker compose down
 ```
 
 #### Переменные окружения
 
-- Все чувствительные данные вынесены в файл .env.
-- Пример файла находится в .env.example.
+- Все чувствительные данные вынесены в файл ```.env```
+- Пример файла находится в ```.env.example```
 
-### Примечание
+Основные переменные:
 
-1. Клонируем репозиторий и переходим в папку проекта
+- SECRET_KEY
+- DEBUG
+- ALLOWED_HOSTS
+- POSTGRES_DB
+- POSTGRES_USER
+- POSTGRES_PASSWORD
+- POSTGRES_HOST
+- POSTGRES_PORT
+- STRIPE_SECRET_KEY
+- CELERY_BROKER_URL
+- CELERY_RESULT_BACKEND
+
+---
+
+### CI/CD и деплой на сервер
+
+В проекте настроен CI/CD с помощью GitHub Actions.
+
+#### Pipeline включает:
+
+- lint — проверка качества кода;
+- test — запуск тестов проекта;
+- build — проверка возможности сборки Docker-образов;
+- deploy — автоматический деплой на сервер по SSH после успешного прохождения всех проверок.
+
+Что нужно для деплоя
+В secrets репозитория GitHub должны быть добавлены:
+
+- SERVER_IP — IP-адрес сервера;
+- SERVER_USER — пользователь для SSH;
+- SSH_KEY — приватный SSH-ключ.
+
+Что должно быть настроено на сервере
+
+- установлен Docker;
+- установлен Docker Compose;
+- открыт SSH-доступ;
+- подготовлена папка с проектом.
+
+**Как выполняется деплой**
+После успешного прохождения всех jobs GitHub Actions подключается к серверу по SSH и выполняет:
 
 ```
-git clone <repo_url>
-cd project
+git pull
+docker compose down
+docker compose up -d --build
 ```
 
-2. Создаём файл .env на основе шаблона
 
-```
-cp .env.example .env
-```
-
-3. Запуск проекта со сборкой контейнеров
-
-```
-docker-compose up --build
-```
