@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
-from .permissions import IsModerator, IsOwner, IsOwnerOrModerator
+from .permissions import IsModerator, IsOwnerOrModerator
 from .paginators import CoursePagination
 
 from .tasks import send_course_update_email
