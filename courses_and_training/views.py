@@ -40,7 +40,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         course = serializer.save()
 
         if course.updated_at and timezone.now() - course.updated_at < timedelta(
-                hours=4
+            hours=4
         ):
             return
 
